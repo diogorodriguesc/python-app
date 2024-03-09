@@ -1,21 +1,23 @@
 import os
-import yaml
+import sys
 
 GOOGLE_CREDENTIALS_ENV_VAR = 'GOOGLE_CREDENTIALS'
 
-with open('../config/dev/parameters.yaml', 'r') as file:
-    parameters = yaml.safe_load(file)['parameters']
-
-from logger.logger import Logger
+from container import Container
 from configuration import Configuration
 
-if __name__ == '__main__':
-    try: 
-        logger = Logger(parameters.get('logger'))
+def run():
+    try:
+        container = Container(sys.argv[1])
+
         google_credentials = os.getenv(GOOGLE_CREDENTIALS_ENV_VAR)
         if google_credentials is None:
             raise Exception(f'{GOOGLE_CREDENTIALS_ENV_VAR} environment variable missing!')
     
-        configuration = Configuration(google_credentials)
+        configuration = Configuration(google_credentials, container.getLogger())
     except Exception as exception:
-        logger.critical(exception)
+        #container.getLogger().critical(exception)
+        print(exception)
+
+if __name__ == '__main__':
+    run()
