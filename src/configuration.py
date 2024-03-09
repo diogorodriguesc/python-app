@@ -1,15 +1,20 @@
+import os
 import json
 
 from types import SimpleNamespace
 from logger.logger_interface import LoggerInterface
 
 class Configuration:
-    projectId: str
-    googleCredentialsFilePath: str
+    __projectId: str
+    __googleCredentialsFilePath: str
 
-    def __init__(self, googleCredentialsFilePath: str, logger: LoggerInterface) -> None:
+    def __init__(self, config: dict, logger: LoggerInterface) -> None:
         if isinstance(logger, LoggerInterface) is False:
             raise TypeError('Logger instance is not valid!')
+        
+        googleCredentialsFilePath = os.getenv(config.get('credentials_file_path'))
+        if googleCredentialsFilePath is None:
+            raise Exception(f'Environment variable missing!')
 
         logger.info(f'Opening file... {googleCredentialsFilePath}');
         f = open(googleCredentialsFilePath)
