@@ -4,29 +4,30 @@ import json
 from types import SimpleNamespace
 from logger.logger_interface import LoggerInterface
 
+
 class Configuration:
-    __projectId: str
-    __googleCredentialsFilePath: str
+    __project_id: str
+    __google_credentials_file_path: str
 
     def __init__(self, config: dict, logger: LoggerInterface) -> None:
         if isinstance(logger, LoggerInterface) is False:
             raise TypeError('Logger instance is not valid!')
         
-        googleCredentialsFilePath = os.getenv(config.get('credentials_file_path'))
-        if googleCredentialsFilePath is None:
+        google_credentials_file_path = os.getenv(config.get('credentials_file_path'))
+        if google_credentials_file_path is None:
             raise Exception(f'Environment variable missing!')
 
-        logger.info(f'Opening file... {googleCredentialsFilePath}');
-        f = open(googleCredentialsFilePath)
+        logger.info(f'Opening file... {google_credentials_file_path}');
+        f = open(google_credentials_file_path)
 
         data = json.load(f, object_hook=lambda d: SimpleNamespace(**d))
-        self.__projectId = data.projectid
-        self.__googleCredentialsFilePath = googleCredentialsFilePath
+        self.__project_id = data.projectid
+        self.__google_credentials_file_path = google_credentials_file_path
 
         f.close()
 
-    def projectId(self) -> str:
-        return self.__projectId
+    def project_id(self) -> str:
+        return self.__project_id
 
-    def googleCredentialsFilePath(self) -> str:
-        return self.__googleCredentialsFilePath
+    def google_credentials_file_path(self) -> str:
+        return self.__google_credentials_file_path

@@ -1,42 +1,42 @@
-import os
 import yaml
 
-from logger.text_formatter import TextFormatter
+from configuration import Configuration
+from logger.formatters.text_formatter import TextFormatter
 from logger.logger import Logger
 from logger.logger_interface import LoggerInterface
-from configuration import Configuration
 
 CONFIG_FILES = {'dev': '../config/dev/parameters.yaml', 'prod': '../config/prod/parameters.yaml'}
 ENVIRONMENTS = ['dev', 'test', 'prod']
 
+
 class Container:
-    logger: any
-    environment: str
-    parameters: dict
-    configuration: any
+    __logger: any
+    __environment: str
+    __parameters: dict
+    __configuration: any
 
     def __init__(self, environment: str) -> None:
+        self.__configuration = self.__logger = None
         if environment not in ENVIRONMENTS:
             raise Exception(f'Environment {environment} is not valid! It must be one of: {ENVIRONMENTS}')
 
-        self.logger = self.configuration = None
-        self.environment = environment
+        self.__environment = environment
         with open(CONFIG_FILES.get(environment), 'r') as file:
-            self.parameters = yaml.safe_load(file)['parameters']
+            self.__parameters = yaml.safe_load(file)['parameters']
 
-        self.getLogger().info(f'Environment selected: {self.environment}')
+        self.get_logger().info(f'Environment selected: {self.__environment}')
 
-    def getLogger(self) -> LoggerInterface:
-        if self.logger is None:
-            self.logger = Logger(self.getParameters().get('logger'), TextFormatter())
+    def get_logger(self) -> LoggerInterface:
+        if self.__logger is None:
+            self.__logger = Logger(self.get_parameters().get('logger'), TextFormatter())
 
-        return self.logger
+        return self.__logger
     
-    def getGoogleConfiguration(self) -> Configuration:
-        if self.configuration is None:
-            self.configuration = Configuration(self.getParameters().get('google'), self.getLogger())
+    def get_google_configuration(self) -> Configuration:
+        if self.__configuration is None:
+            self.__configuration = Configuration(self.get_parameters().get('google'), self.get_logger())
 
-        return self.configuration
+        return self.__configuration
     
-    def getParameters(self) -> dict:
-        return self.parameters
+    def get_parameters(self) -> dict:
+        return self.__parameters
