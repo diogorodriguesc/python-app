@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from logger.formatter_interface import FormatterInterface
+from ..formatter_interface import FormatterInterface
 
 
 def get_datetime_string() -> str:

@@ -1,3 +1,5 @@
+import psycopg2
+
 from typing import Any, final
 
 from logger.formatter_interface import FormatterInterface
@@ -12,6 +14,7 @@ class Logger(LoggerInterface):
     __fingers_cross_log_level: str
     __log_queue: list = list()
     __formatter: FormatterInterface
+    __conn: psycopg2
 
     def __init__(self, config: dict, formatter: FormatterInterface) -> None:
         log_level = config.get('fingers_cross_log_level')

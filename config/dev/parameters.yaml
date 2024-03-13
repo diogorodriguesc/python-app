@@ -5,3 +5,10 @@ parameters:
 
   google:
     credentials_file_path: 'GOOGLE_CREDENTIALS'
+
+  database:
+    user: 'root'
+    password: 'root'
+    database: 'app'
+    host: '0.0.0.0'
+    port: '6543'
