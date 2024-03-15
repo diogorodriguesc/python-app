@@ -5,4 +5,3 @@ parameters:
 
   google:
     credentials_file_path: 'GOOGLE_CREDENTIALS'
-    
