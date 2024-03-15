@@ -1,49 +1,19 @@
-import psycopg2
 import os
 import importlib.util
 
+import psycopg2
 from logger.logger_interface import LoggerInterface
-
-
-class DatabaseConfig:
-    __host: str
-    __port: int
-    __database: str
-    __user: str
-    __password: str
-
-    def __init__(self, host: str, port: int, database: str, user: str, password: str) -> None:
-        self.__host = host
-        self.__port = port
-        self.__database = database
-        self.__user = user
-        self.__password = password
-
-    def get_host(self) -> str:
-        return self.__host
-
-    def get_port(self) -> int:
-        return self.__port
-
-    def get_database(self) -> str:
-        return self.__database
-
-    def get_user(self) -> str:
-        return self.__user
-
-    def get_password(self) -> str:
-        return self.__password
 
 
 class DatabaseMigrations:
     __migrations_manager_repository = None
-    __migrations_executer = None
+    __migrations_executor = None
 
     __logger: LoggerInterface
 
-    def __init__(self, database_config: DatabaseConfig, logger: LoggerInterface) -> None:
-        self.__migrations_manager_repository = MigrationsManagerRepository(database_config)
-        self.__migrations_executer = MigrationExecuter(database_config)
+    def __init__(self, connection, logger: LoggerInterface) -> None:
+        self.__migrations_manager_repository = MigrationsManagerRepository(connection)
+        self.__migrations_executor = MigrationExecutor(connection)
         self.__logger = logger
 
     def migrate(self):
@@ -53,12 +23,10 @@ class DatabaseMigrations:
             if filename.endswith(".py"):
                 self.__migrate_file(filename)
 
-    def __migrate_file(self, filename: str) -> None:
-        self.__logger.info(f"Migrating {filename}...")
+        self.__logger.info(f"All migrations applied")
 
-        if self.__migrations_manager_repository.check_if_migrated(filename):
-            self.__logger.info(f"{filename} is migrated")
-        else:
+    def __migrate_file(self, filename: str) -> None:
+        if self.__migrations_manager_repository.check_if_migrated(filename) is False:
             self.__logger.info(f"{filename} is not migrated, migration will take place")
             self.__migrations_manager_repository.insert_migration(filename)
             obj = self.__load_module(filename, f"../migrations/{filename}")
@@ -73,29 +41,27 @@ class DatabaseMigrations:
 
 
 class DatabaseClient:
-    _conn = None
+    _connection = None
 
-    def __init__(self, database_config: DatabaseConfig) -> None:
-        self._conn = psycopg2.connect(
-            database=database_config.get_database(),
-            user=database_config.get_user(),
-            host=database_config.get_host(),
-            password=database_config.get_password(),
-            port=database_config.get_port()
-        )
+    def __init__(self, connection) -> None:
+        self._connection = connection
 
 
-class MigrationExecuter(DatabaseClient):
+class MigrationExecutor(DatabaseClient):
     def execute(self, query: str) -> None:
-        cursor = self._conn.cursor()
+        cursor = self._connection.cursor()
         cursor.execute(query)
-        self._conn.commit()
+        self._connection.commit()
 
 
 class MigrationsManagerRepository(DatabaseClient):
     def check_if_migrated(self, filename: str) -> bool:
-        cursor = self._conn.cursor()
-        cursor.execute(f"""SELECT * FROM migrations WHERE file = '{filename}'""")
+        cursor = self._connection.cursor()
+        cursor.execute(
+            f"""
+            SELECT * FROM migrations WHERE file = '{filename}';
+            """
+        )
         results = cursor.rowcount
 
         if results == 0:
@@ -104,15 +70,19 @@ class MigrationsManagerRepository(DatabaseClient):
         return True
 
     def insert_migration(self, filename: str) -> None:
-        self._conn.cursor().execute(f"""
-        INSERT INTO migrations (file) VALUES ('{filename}')
-                        """)
+        self._connection.cursor().execute(
+            f"""
+            INSERT INTO migrations (file) VALUES ('{filename}');
+            """
+        )
 
-        self._conn.commit()
+        self._connection.commit()
 
     def create_migrations_table_if_not_exists(self) -> None:
-        self._conn.cursor().execute("""CREATE TABLE IF NOT EXISTS migrations(
-            file VARCHAR (200) UNIQUE NOT NULL);
-            """)
+        self._connection.cursor().execute(
+            """
+            CREATE TABLE IF NOT EXISTS migrations(file VARCHAR (200) UNIQUE NOT NULL);
+            """
+        )
 
-        self._conn.commit()
+        self._connection.commit()

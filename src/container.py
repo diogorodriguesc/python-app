@@ -1,24 +1,25 @@
 import yaml
+import psycopg2
 
 from configuration import Configuration
 from logger.formatters.text_formatter import TextFormatter
 from logger.logger import Logger
 from logger.logger_interface import LoggerInterface
-from migrations.database_migrations import DatabaseMigrations, DatabaseConfig
+from migrations.database_migrations import DatabaseMigrations
 
 CONFIG_FILES = {'dev': '../config/dev/parameters.yaml', 'prod': '../config/prod/parameters.yaml'}
 ENVIRONMENTS = ['dev', 'test', 'prod']
 
 
 class Container:
-    __logger: any
-    __environment: str
-    __parameters: dict
-    __configuration: any
-    __database_migrations: any
+    __logger: any = None
+    __environment: str = None
+    __parameters: dict = None
+    __configuration: any = None
+    __database_migrations: any = None
+    __database_connection: any = None
 
     def __init__(self, environment: str) -> None:
-        self.__configuration = self.__logger = self.__database_migrations = None
         if environment not in ENVIRONMENTS:
             raise Exception(f'Environment {environment} is not valid! It must be one of: {ENVIRONMENTS}')
 
@@ -45,17 +46,23 @@ class Container:
 
     def get_database_migrations(self) -> DatabaseMigrations:
         if self.__database_migrations is None:
-            database_configs = self.get_parameters().get('database')
-
             self.__database_migrations = DatabaseMigrations(
-                DatabaseConfig(
-                    host=database_configs.get('host'),
-                    port=database_configs.get('port'),
-                    database=database_configs.get('database'),
-                    user=database_configs.get('user'),
-                    password=database_configs.get('password')
-                ),
+                self.__get_database_connection(),
                 logger=self.get_logger()
             )
 
         return self.__database_migrations
+
+    def __get_database_connection(self):
+        if self.__database_connection is None:
+            database_configs = self.get_parameters().get('database')
+
+            self.__database_connection = psycopg2.connect(
+                host=database_configs.get('host'),
+                port=database_configs.get('port'),
+                database=database_configs.get('database'),
+                user=database_configs.get('user'),
+                password=database_configs.get('password')
+            )
+
+        return self.__database_connection
