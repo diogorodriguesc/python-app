@@ -1,44 +1,56 @@
-from datetime import datetime
+import psycopg2
 
-class Logger:
-    fingers_cross: bool
-    fingers_cross_queue: list
-    
-    def __init__(self, config: dict) -> None:
-        self.fingers_cross = config.get('fingers_cross', False)
-        self.fingers_cross_queue = list()
+from typing import Any, final
 
-    def critical(self, message) -> None:
-        self.__release_message(self.__format_message(message, 'critical'), 'critical')
+from logger.formatter_interface import FormatterInterface
+from logger.logger_interface import LoggerInterface
 
-    def error(self, message) -> None:
-        self.__release_message(self.__format_message(message, 'error'), 'error')
+LOG_LEVELS = ['critical', 'error', 'warning', 'info', 'debug']
 
-    def warning(self, message) -> None:
-        self.__release_message(self.__format_message(message, 'warning'), 'warning')
 
-    def info(self, message) -> None:
-        self.__release_message(self.__format_message(message, 'info'), 'info')
+@final
+class Logger(LoggerInterface):
+    __fingers_cross: bool
+    __fingers_cross_log_level: str
+    __log_queue: list = list()
+    __formatter: FormatterInterface
+    __conn: psycopg2
 
-    def debug(self, message) -> None:
-        self.__release_message(self.__format_message(message, 'debug'), 'debug')
+    def __init__(self, config: dict, formatter: FormatterInterface) -> None:
+        log_level = config.get('fingers_cross_log_level')
+        fingers_cross = config.get('fingers_cross', False)
 
-    def __format_message(self, message, type) -> str:
-        return f"[{self.__datetime()}][{type.upper()}] {message}"
-    
-    def __release_message(self, message, type):
-        if self.fingers_cross is True:
-            if type == 'debug':
-                self.fingers_cross_queue.append(message)
+        if fingers_cross and log_level not in LOG_LEVELS:
+            raise Exception(f'fingers cross error level is invalid. The valid log levels are {LOG_LEVELS}')
+        self.__fingers_cross_log_level = log_level
+
+        self.__fingers_cross = fingers_cross
+        self.__formatter = formatter
+
+    def critical(self, message: str) -> None:
+        self.__release_message(self.__formatter.format(message, 'critical'), 'critical')
+
+    def error(self, message: str) -> None:
+        self.__release_message(self.__formatter.format(message, 'error'), 'error')
+
+    def warning(self, message: str) -> None:
+        self.__release_message(self.__formatter.format(message, 'warning'), 'warning')
+
+    def info(self, message: str) -> None:
+        self.__release_message(self.__formatter.format(message, 'info'), 'info')
+
+    def debug(self, message: str) -> None:
+        self.__release_message(self.__formatter.format(message, 'debug'), 'debug')
+
+    def __release_message(self, message: str, log_level: str) -> None:
+        if self.__fingers_cross is True:
+            if log_level == self.__fingers_cross_log_level:
+                self.__log_queue.append(message)
             else:
-                for log in self.fingers_cross_queue:
+                for log in self.__log_queue:
                     print(log)
                 print(message)
 
-                self.fingers_cross_queue = list()
+                self.__log_queue = list()
         else:
             print(message)
-
-    def __datetime(self) -> str:
-        now = datetime.now()
-        return now.strftime('%Y-%m-%d %H:%M:%S')

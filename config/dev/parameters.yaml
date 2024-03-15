@@ -1,3 +1,14 @@
 parameters:
   logger:
-    fingers_cross: true
+    fingers_cross: false
+    fingers_cross_log_level: 'debug'
+
+  google:
+    credentials_file_path: 'GOOGLE_CREDENTIALS'
+
+  database:
+    user: 'root'
+    password: 'root'
+    database: 'app'
+    host: '0.0.0.0'
+    port: '6543'

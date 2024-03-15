@@ -1,0 +1,7 @@
+parameters:
+  logger:
+    fingers_cross: true
+    fingers_cross_log_level: 'info'
+
+  google:
+    credentials_file_path: 'GOOGLE_CREDENTIALS'
