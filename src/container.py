@@ -4,7 +4,7 @@ from configuration import Configuration
 from logger.formatters.text_formatter import TextFormatter
 from logger.logger import Logger
 from logger.logger_interface import LoggerInterface
-from migrations.database_migrations import DatabaseMigrations
+from migrations.database_migrations import DatabaseMigrations, DatabaseConfig
 
 CONFIG_FILES = {'dev': '../config/dev/parameters.yaml', 'prod': '../config/prod/parameters.yaml'}
 ENVIRONMENTS = ['dev', 'test', 'prod']
@@ -48,11 +48,13 @@ class Container:
             database_configs = self.get_parameters().get('database')
 
             self.__database_migrations = DatabaseMigrations(
-                host=database_configs.get('host'),
-                port=database_configs.get('port'),
-                database=database_configs.get('database'),
-                user=database_configs.get('user'),
-                password=database_configs.get('password'),
+                DatabaseConfig(
+                    host=database_configs.get('host'),
+                    port=database_configs.get('port'),
+                    database=database_configs.get('database'),
+                    user=database_configs.get('user'),
+                    password=database_configs.get('password')
+                ),
                 logger=self.get_logger()
             )
 

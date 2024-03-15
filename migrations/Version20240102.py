@@ -1,9 +1,8 @@
+
+
 class Version20240102:
-    def __init__(self):
-        pass
+    def up(self) -> None:
+        print("Updating database...")
 
-    def up(self):
-        print("Upgrading")
-
-    def down(self):
+    def down(self) -> None:
         print("Downgrade")
