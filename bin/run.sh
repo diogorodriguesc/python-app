@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-python3 ../src/main.py dev
+python3 main.py dev

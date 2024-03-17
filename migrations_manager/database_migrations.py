@@ -6,7 +6,7 @@ from logger.logger_interface import LoggerInterface
 
 
 class DatabaseMigrations:
-    __DIRECTORY_FOR_MIGRATIONS="migrations_manager/migrations"
+    __DIRECTORY_FOR_MIGRATIONS = "migrations_manager/migrations"
 
     __migrations_manager_repository = None
     __migrations_executor = None
