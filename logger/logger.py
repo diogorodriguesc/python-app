@@ -1,6 +1,6 @@
 import psycopg2
 
-from typing import Any, final
+from typing import final
 
 from logger.formatter_interface import FormatterInterface
 from logger.logger_interface import LoggerInterface

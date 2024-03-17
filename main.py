@@ -1,8 +1,3 @@
-import sys
-
-from container import Container
-
-
 def run() -> None:
     try:
         container = Container(sys.argv[1])
@@ -14,4 +9,7 @@ def run() -> None:
 
 
 if __name__ == '__main__':
+    import sys
+
+    from container import Container
     run()

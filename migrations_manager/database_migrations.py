@@ -6,6 +6,8 @@ from logger.logger_interface import LoggerInterface
 
 
 class DatabaseMigrations:
+    __DIRECTORY_FOR_MIGRATIONS="migrations_manager/migrations"
+
     __migrations_manager_repository = None
     __migrations_executor = None
 
@@ -19,17 +21,17 @@ class DatabaseMigrations:
     def migrate(self):
         self.__migrations_manager_repository.create_migrations_table_if_not_exists()
 
-        for filename in sorted(os.listdir("../migrations")):
+        for filename in sorted(os.listdir(self.__DIRECTORY_FOR_MIGRATIONS)):
             if filename.endswith(".py"):
                 self.__migrate_file(filename)
 
-        self.__logger.info(f"All migrations applied")
+        self.__logger.info(f"All migrations_manager applied")
 
     def __migrate_file(self, filename: str) -> None:
         if self.__migrations_manager_repository.check_if_migrated(filename) is False:
             self.__logger.info(f"{filename} is not migrated, migration will take place")
             self.__migrations_manager_repository.insert_migration(filename)
-            obj = self.__load_module(filename, f"../migrations/{filename}")
+            obj = self.__load_module(filename, f"{self.__DIRECTORY_FOR_MIGRATIONS}/{filename}")
             obj.up()
 
     def __load_module(self, filename: str, location: str) -> object:

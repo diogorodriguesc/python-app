@@ -5,9 +5,9 @@ from configuration import Configuration
 from logger.formatters.text_formatter import TextFormatter
 from logger.logger import Logger
 from logger.logger_interface import LoggerInterface
-from migrations.database_migrations import DatabaseMigrations
+from migrations_manager.database_migrations import DatabaseMigrations
 
-CONFIG_FILES = {'dev': '../config/dev/parameters.yaml', 'prod': '../config/prod/parameters.yaml'}
+CONFIG_FILES = {'dev': 'config/dev/parameters.yaml', 'prod': 'config/prod/parameters.yaml'}
 ENVIRONMENTS = ['dev', 'test', 'prod']
 
 
