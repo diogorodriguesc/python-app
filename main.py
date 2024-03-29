@@ -1,7 +1,7 @@
 def run() -> None:
     try:
         container = Container(sys.argv[1])
-        # container.get_logger().info(f'Project id is: {container.get_google_configuration().project_id()}')
+        container.get_logger().info(f'Project id is: {container.get_google_configuration().project_id()}')
 
         container.get_database_migrations().migrate()
     except Exception as exception:

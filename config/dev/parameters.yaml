@@ -4,11 +4,11 @@ parameters:
     fingers_cross_log_level: 'debug'
 
   google:
-    credentials_file_path: 'GOOGLE_CREDENTIALS'
+    credentials_file_path: '%SITEMAPS_INDEXING_GOOGLE_CREDENTIALS%'
 
   database:
     user: 'root'
-    password: 'root'
+    password: '%SITEMAPS_INDEXING_DB_PASSWORD%'
     database: 'app'
     host: '0.0.0.0'
     port: '6543'
