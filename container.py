@@ -1,7 +1,7 @@
-import yaml
+import os
 import psycopg2
 
-from configuration import Configuration
+from google_configuration import GoogleConfiguration
 from logger.formatters.text_formatter import TextFormatter
 from logger.logger import Logger
 from logger.logger_interface import LoggerInterface
@@ -11,11 +11,46 @@ CONFIG_FILES = {'dev': 'config/dev/parameters.yaml', 'prod': 'config/prod/parame
 ENVIRONMENTS = ['dev', 'test', 'prod']
 
 
+def extract_configurations(environment: str) -> dict:
+    import yaml
+    with open(CONFIG_FILES.get(environment), 'r') as file:
+        return replace_env_variables(yaml.safe_load(file)['parameters'])
+
+
+def replace_env_variables(data):
+    if isinstance(data, dict):
+        for key, value in data.items():
+            if isinstance(value, dict) or isinstance(value, list):
+                replace_env_variables(value)
+            elif isinstance(value, str) and '%' in value:
+                # Extract the environment variable name
+                env_var_name = value.strip('%')
+                # Get the corresponding environment variable value
+                env_var_value = os.getenv(env_var_name)
+                # Replace the value if environment variable exists
+                if env_var_value is not None:
+                    data[key] = env_var_value
+    elif isinstance(data, list):
+        for i, item in enumerate(data):
+            if isinstance(item, dict) or isinstance(item, list):
+                replace_env_variables(item)
+            elif isinstance(item, str) and '%' in item:
+                # Extract the environment variable name
+                env_var_name = item.strip('%')
+                # Get the corresponding environment variable value
+                env_var_value = os.getenv(env_var_name)
+                # Replace the value if environment variable exists
+                if env_var_value is not None:
+                    data[i] = env_var_value
+
+    return data
+
+
 class Container:
     __logger: any = None
     __environment: str = None
     __parameters: dict = None
-    __configuration: any = None
+    __google_configuration: any = None
     __database_migrations: any = None
     __database_connection: any = None
 
@@ -24,9 +59,7 @@ class Container:
             raise Exception(f'Environment {environment} is not valid! It must be one of: {ENVIRONMENTS}')
 
         self.__environment = environment
-        with open(CONFIG_FILES.get(environment), 'r') as file:
-            self.__parameters = yaml.safe_load(file)['parameters']
-
+        self.__parameters = extract_configurations(environment)
         self.get_logger().info(f'Environment selected: {self.__environment}')
 
     def get_logger(self) -> LoggerInterface:
@@ -35,11 +68,11 @@ class Container:
 
         return self.__logger
 
-    def get_google_configuration(self) -> Configuration:
-        if self.__configuration is None:
-            self.__configuration = Configuration(self.get_parameters().get('google'), self.get_logger())
+    def get_google_configuration(self) -> GoogleConfiguration:
+        if self.__google_configuration is None:
+            self.__google_configuration = GoogleConfiguration(self.get_parameters().get('google'), self.get_logger())
 
-        return self.__configuration
+        return self.__google_configuration
 
     def get_parameters(self) -> dict:
         return self.__parameters
