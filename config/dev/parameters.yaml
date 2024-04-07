@@ -10,5 +10,5 @@ parameters:
     user: 'root'
     password: '%SITEMAPS_INDEXING_DB_PASSWORD%'
     database: 'app'
-    host: '0.0.0.0'
-    port: '6543'
+    host: '%SITEMAPS_INDEXING_DB_HOST%'
+    port: '%SITEMAPS_INDEXING_DB_PORT%'
