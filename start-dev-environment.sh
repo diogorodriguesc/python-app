@@ -3,7 +3,7 @@
 DIR=$(dirname "$0")
 cd $DIR
 
-environments=(dev test prod)
+environments=(dev test)
 
 if [ -z "$1" ]
 then
