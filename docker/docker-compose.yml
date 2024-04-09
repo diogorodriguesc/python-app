@@ -6,9 +6,11 @@ services:
       dockerfile: Dockerfile
       context: ..
     environment:
+      SITEMAPS_INDEXING_DB_NAME: app
       SITEMAPS_INDEXING_DB_HOST: database
-      SITEMAPS_INDEXING_DB_PORT: 5432
+      SITEMAPS_INDEXING_DB_USER: root
       SITEMAPS_INDEXING_DB_PASSWORD: root
+      SITEMAPS_INDEXING_DB_PORT: 5432
       SITEMAPS_INDEXING_ENVIRONMENT: dev
     depends_on:
       - database

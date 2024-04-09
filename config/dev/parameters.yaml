@@ -7,8 +7,8 @@ parameters:
     credentials_file_path: '%SITEMAPS_INDEXING_GOOGLE_CREDENTIALS%'
 
   database:
-    user: 'root'
+    database: '%SITEMAPS_INDEXING_DB_NAME%'
+    user: '%SITEMAPS_INDEXING_DB_USER%'
     password: '%SITEMAPS_INDEXING_DB_PASSWORD%'
-    database: 'app'
     host: '%SITEMAPS_INDEXING_DB_HOST%'
     port: '%SITEMAPS_INDEXING_DB_PORT%'
