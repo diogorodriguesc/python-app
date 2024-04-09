@@ -1,15 +1,19 @@
-def run() -> None:
-    try:
-        container = Container(sys.argv[1])
-        container.get_logger().info(f'Project id is: {container.get_google_configuration().project_id()}')
+from flask import Flask
 
-        container.get_database_migrations().migrate()
+app = Flask(__name__)
+
+@app.route("/")
+def home():
+    return "Hello World!"
+
+
+if __name__ == "__main__":
+    from container import Container
+    import os
+
+    try:
+        container = Container(os.getenv("SITEMAPS_INDEXING_ENVIRONMENT"))
     except Exception as exception:
         print(exception)
 
-
-if __name__ == '__main__':
-    import sys
-
-    from container import Container
-    run()
+    app.run(debug=True)
