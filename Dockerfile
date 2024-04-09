@@ -38,8 +38,6 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 
 USER appuser
 
-COPY . .
-
 EXPOSE 5000
 
-CMD sh bin/run_migrations.sh && python3 main.py
+CMD sh bin/run_migrations.sh && flask --debug --app main run --host=0.0.0.0
