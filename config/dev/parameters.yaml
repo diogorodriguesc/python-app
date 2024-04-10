@@ -12,3 +12,6 @@ parameters:
     password: '%SITEMAPS_INDEXING_DB_PASSWORD%'
     host: '%SITEMAPS_INDEXING_DB_HOST%'
     port: '%SITEMAPS_INDEXING_DB_PORT%'
+
+  authentication:
+    secret_key: '%SECRET_KEY%'

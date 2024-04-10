@@ -12,6 +12,7 @@ services:
       SITEMAPS_INDEXING_DB_PASSWORD: root
       SITEMAPS_INDEXING_DB_PORT: 5432
       SITEMAPS_INDEXING_ENVIRONMENT: dev
+      SECRET_KEY: 'this-is-a-key'
     depends_on:
       - database
     ports:
