@@ -6,6 +6,7 @@ from logger.formatters.text_formatter import TextFormatter
 from logger.logger import Logger
 from logger.logger_interface import LoggerInterface
 from migrations_manager.database_migrations import DatabaseMigrations
+from repository.users_repository import UsersRepository
 
 CONFIG_FILES = {'dev': 'config/dev/parameters.yaml', 'prod': 'config/prod/parameters.yaml'}
 ENVIRONMENTS = ['dev', 'test', 'prod']
@@ -53,6 +54,7 @@ class Container:
     __google_configuration: any = None
     __database_migrations: any = None
     __database_connection: any = None
+    __users_repository: UsersRepository = None
 
     def __init__(self, environment: str) -> None:
         if environment not in ENVIRONMENTS:
@@ -99,3 +101,9 @@ class Container:
             )
 
         return self.__database_connection
+
+    def get_users_repository(self) -> UsersRepository:
+        if self.__users_repository is None:
+            self.__users_repository = UsersRepository(self.__get_database_connection())
+
+        return self.__users_repository
