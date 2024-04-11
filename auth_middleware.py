@@ -5,7 +5,7 @@ from flask import request, abort, current_app
 from models import User
 
 
-def authenticator(role: str):
+def auth_required(role: str):
     def decorator(f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
@@ -41,3 +41,15 @@ def authenticator(role: str):
             return f(current_user, *args, **kwargs)
         return decorated_function
     return decorator
+
+
+def authenticate_user(params: dict) -> dict:
+    if type(params) is not dict or params.keys() != {'user', 'password'}:
+        raise Exception("Body params invalid")
+
+    user = params['user']
+    token = jwt.encode({'user_id': user, 'role': 'ROLE_ADMIN'}, current_app.config['SECRET_KEY'], algorithm='HS256')
+
+    return {
+        'token': token
+    }
