@@ -32,7 +32,10 @@ class DatabaseMigrations:
             self.__logger.info(f"{filename} is not migrated, migration will take place")
             self.__migrations_manager_repository.insert_migration(filename)
             obj = self.__load_module(filename, f"{self.__DIRECTORY_FOR_MIGRATIONS}/{filename}")
-            obj.up()
+            sql = obj.up()
+
+            if type(sql) is str:
+                self.__migrations_executor.execute(sql)
 
     def __load_module(self, filename: str, location: str) -> object:
         spec = importlib.util.spec_from_file_location(filename, location)
