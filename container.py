@@ -2,11 +2,13 @@ import os
 import psycopg2
 
 from google_configuration import GoogleConfiguration
+from migrations_manager.database_migrations import DatabaseMigrations
 from logger.formatters.text_formatter import TextFormatter
 from logger.logger import Logger
 from logger.logger_interface import LoggerInterface
-from migrations_manager.database_migrations import DatabaseMigrations
 from repositories import UsersRepository
+
+from database_client import DatabaseClient
 
 CONFIG_FILES = {'dev': 'config/dev/parameters.yaml', 'prod': 'config/prod/parameters.yaml'}
 ENVIRONMENTS = ['dev', 'test', 'prod']
@@ -55,6 +57,8 @@ class Container:
     __database_migrations: any = None
     __database_connection: any = None
     __users_repository: UsersRepository = None
+    __database_configs: any = None
+    __database_client: any = None
 
     def __init__(self, environment: str) -> None:
         if environment not in ENVIRONMENTS:
@@ -90,7 +94,7 @@ class Container:
 
     def __get_database_connection(self):
         if self.__database_connection is None:
-            database_configs = self.get_parameters().get('database')
+            database_configs = self.__get_database_configuration()
 
             self.__database_connection = psycopg2.connect(
                 host=database_configs.get('host'),
@@ -102,8 +106,20 @@ class Container:
 
         return self.__database_connection
 
+    def __get_database_configuration(self):
+        if self.__database_configs is None:
+            self.__database_configs = self.get_parameters().get('database')
+
+        return self.__database_configs
+
+    def __get_database_client(self):
+        if self.__database_client is None:
+            self.__database_client = DatabaseClient(self.__get_database_configuration())
+
+        return self.__database_client
+
     def get_users_repository(self) -> UsersRepository:
         if self.__users_repository is None:
-            self.__users_repository = UsersRepository(self.__get_database_connection())
+            self.__users_repository = UsersRepository(self.__get_database_client())
 
         return self.__users_repository

@@ -1,17 +1,17 @@
-class UsersRepository:
-    __connection = None
+from database_client import DatabaseClient
 
-    def __init__(self, connection):
-        self.__connection = connection
+
+class UsersRepository:
+    def __init__(self, database_client: DatabaseClient):
+        self.__database_client = database_client
 
     def create_user(self, username, pwd, role) -> bool:
         try:
-            self.__connection.cursor().execute(
+            self.__database_client.execute(
                 f"""
                 INSERT INTO users (\"username\", \"pwd\", \"role\") VALUES ('{username}', '{pwd}', '{role}');
                 """
-                )
-            self.__connection.commit()
+            )
         except Exception:
             # do not let Database exception go out of application
             raise Exception('Unexpected error')
@@ -21,8 +21,7 @@ class UsersRepository:
 
     def checkIfExists(self, username, pwd) -> list:
         try:
-            cursor = self.__connection.cursor()
-            cursor.execute(
+            return self.__database_client.fetchone(
                 f"""
                 SELECT *
                 FROM users where
@@ -32,6 +31,5 @@ class UsersRepository:
                 """
             )
 
-            return cursor.fetchone()
         except Exception:
             raise Exception('Unexpected error')

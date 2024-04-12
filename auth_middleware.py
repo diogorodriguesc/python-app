@@ -1,10 +1,11 @@
 import jwt
+import hashlib
+
 from functools import wraps
-from urllib import request
 from flask import request, abort, current_app
 from models import User
 from repositories import UsersRepository
-import hashlib
+from urllib import request
 
 
 def auth_required(role: str):
