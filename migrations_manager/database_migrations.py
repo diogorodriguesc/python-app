@@ -1,7 +1,6 @@
 import os
 import importlib.util
 
-import psycopg2
 from logger.logger_interface import LoggerInterface
 
 
@@ -25,7 +24,7 @@ class DatabaseMigrations:
             if filename.endswith(".py"):
                 self.__migrate_file(filename)
 
-        self.__logger.info(f"All migrations_manager applied")
+        self.__logger.info("All migrations_manager applied")
 
     def __migrate_file(self, filename: str) -> None:
         if self.__migrations_manager_repository.check_if_migrated(filename) is False:
@@ -34,7 +33,7 @@ class DatabaseMigrations:
             obj = self.__load_module(filename, f"{self.__DIRECTORY_FOR_MIGRATIONS}/{filename}")
             sql = obj.up()
 
-            if type(sql) is str:
+            if isinstance(sql, str):
                 self.__migrations_executor.execute(sql)
 
     def __load_module(self, filename: str, location: str) -> object:

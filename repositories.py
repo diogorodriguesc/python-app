@@ -12,9 +12,9 @@ class UsersRepository:
                 INSERT INTO users (\"username\", \"pwd\", \"role\") VALUES ('{username}', '{pwd}', '{role}');
                 """
             )
-        except Exception:
+        except Exception as e:
             # do not let Database exception go out of application
-            raise Exception('Unexpected error')
+            raise Exception('Unexpected error') from e
 
         return True
 
@@ -31,5 +31,5 @@ class UsersRepository:
                 """
             )
 
-        except Exception:
-            raise Exception('Unexpected error')
+        except Exception as e:
+            raise Exception('Unexpected error') from e

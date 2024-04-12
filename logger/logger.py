@@ -1,5 +1,3 @@
-import psycopg2
-
 from typing import final
 
 from logger.formatter_interface import FormatterInterface
@@ -12,9 +10,8 @@ LOG_LEVELS = ['critical', 'error', 'warning', 'info', 'debug']
 class Logger(LoggerInterface):
     __fingers_cross: bool
     __fingers_cross_log_level: str
-    __log_queue: list = list()
+    __log_queue: list = []
     __formatter: FormatterInterface
-    __conn: psycopg2
 
     def __init__(self, config: dict, formatter: FormatterInterface) -> None:
         log_level = config.get('fingers_cross_log_level')
@@ -51,6 +48,6 @@ class Logger(LoggerInterface):
                     print(log)
                 print(message)
 
-                self.__log_queue = list()
+                self.__log_queue = []
         else:
             print(message)

@@ -1,8 +1,8 @@
 import os
+from flask import Flask, request
 
 from auth_middleware import auth_required, authenticate_user, register_user
 from container import Container
-from flask import Flask, request
 from models import User, Response
 
 app = Flask(__name__)
@@ -12,26 +12,30 @@ app.config['SECRET_KEY'] = container.get_parameters().get('authentication')['sec
 
 @app.get("/urls")
 @auth_required("ROLE_ADMIN")
-def urls(current_user: User):
-    if type(current_user) is User:
-        return (Response()).parse(), 200
+def urls(current_user: User) -> tuple: # pylint: disable=unused-argument
+    return (Response()).parse(), 200
 
 
 @app.post("/sign_in")
-def sign_in():
+def sign_in() -> tuple:
     try:
         token = authenticate_user(request.json, container.get_users_repository())
-        if token:
+
+        if isinstance(token, dict):
             return (Response(data={"token": token})).parse(), 200
+
+        return (Response(message="Could not sign in user")).parse(), 401
     except Exception as e:
         return (Response(message=str(e), error=str(e))).parse(), 500
 
 
 @app.post("/sign_up")
-def sign_up():
+def sign_up() -> tuple:
     try:
         if register_user(request.json, container.get_users_repository()) is True:
             return (Response()).parse(), 200
+
+        return (Response(message="Could not sign up user")).parse(), 401
     except Exception as e:
         return (Response(message=str(e), error=str(e))).parse(), 500
 

@@ -1,5 +1,6 @@
 import os
 import psycopg2
+import yaml
 
 from google_configuration import GoogleConfiguration
 from migrations_manager.database_migrations import DatabaseMigrations
@@ -15,7 +16,6 @@ ENVIRONMENTS = ['dev', 'test', 'prod']
 
 
 def extract_configurations(environment: str) -> dict:
-    import yaml
     with open(CONFIG_FILES.get(environment), 'r') as file:
         return replace_env_variables(yaml.safe_load(file)['parameters'])
 
@@ -50,15 +50,15 @@ def replace_env_variables(data):
 
 
 class Container:
-    __logger: any = None
-    __environment: str = None
-    __parameters: dict = None
-    __google_configuration: any = None
-    __database_migrations: any = None
+    __logger: LoggerInterface | None = None
+    __environment: str
+    __parameters: dict
+    __google_configuration: GoogleConfiguration | None = None
+    __database_migrations: DatabaseMigrations | None = None
     __database_connection: any = None
     __users_repository: UsersRepository = None
     __database_configs: any = None
-    __database_client: any = None
+    __database_client: DatabaseClient | None = None
 
     def __init__(self, environment: str) -> None:
         if environment not in ENVIRONMENTS:
@@ -112,7 +112,7 @@ class Container:
 
         return self.__database_configs
 
-    def __get_database_client(self):
+    def __get_database_client(self) -> DatabaseClient:
         if self.__database_client is None:
             self.__database_client = DatabaseClient(self.__get_database_configuration())
 
