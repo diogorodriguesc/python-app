@@ -3,11 +3,11 @@ from functools import wraps
 from urllib import request
 from flask import request, abort, current_app
 from models import User
-from repository.users_repository import UsersRepository
+from repositories import UsersRepository
 import hashlib
 
 
-def auth_required(role: str, users_repository: UsersRepository):
+def auth_required(role: str):
     def decorator(f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
@@ -49,27 +49,29 @@ def authenticate_user(params: dict, users_repository: UsersRepository) -> dict:
     if type(params) is not dict or params.keys() != {'user', 'password'}:
         raise Exception("Body params invalid")
 
-    user = users_repository.checkIfExists(params['user'], hashlib.sha256(params['password'].encode("utf-8")).hexdigest())
+    user = users_repository.checkIfExists(params['user'], create_password_hash(params["password"]))
     if not user:
         raise Exception("Invalid credentials")
 
     token = jwt.encode({'user_id': user[0], 'role': 'ROLE_ADMIN'}, current_app.config['SECRET_KEY'], algorithm='HS256')
 
     return {
-        'token': token
+        "token": token
     }
 
 
-def register_user(params: dict, users_repository: UsersRepository) -> dict:
+def register_user(params: dict, users_repository: UsersRepository) -> bool:
     if type(params) is not dict or params.keys() != {'user', 'password', 'role'}:
         raise Exception("Body params invalid")
 
     users_repository.create_user(
         params["user"],
-        hashlib.sha256(params['password'].encode("utf-8")).hexdigest(),
+        create_password_hash(params["password"]),
         params["role"]
     )
 
-    return {
+    return True
 
-    }
+
+def create_password_hash(password: str) -> str:
+    return hashlib.sha256(password.encode("utf-8")).hexdigest()
