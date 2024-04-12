@@ -5,7 +5,6 @@ from functools import wraps
 from flask import request, abort, current_app
 from models import User
 from repositories import UsersRepository
-from urllib import request
 
 
 def auth_required(role: str):
@@ -62,13 +61,13 @@ def authenticate_user(params: dict, users_repository: UsersRepository) -> dict:
 
 
 def register_user(params: dict, users_repository: UsersRepository) -> bool:
-    if type(params) is not dict or params.keys() != {'user', 'password', 'role'}:
+    if type(params) is not dict or params.keys() != {'user', 'password'}:
         raise Exception("Body params invalid")
 
     users_repository.create_user(
         params["user"],
         create_password_hash(params["password"]),
-        params["role"]
+        "ROLE_ADMIN"
     )
 
     return True

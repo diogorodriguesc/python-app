@@ -1,0 +1,101 @@
+{
+	"info": {
+		"_postman_id": "e2ba5475-9f70-4f65-9eff-83c1d54ae017",
+		"name": "diogorodriguesc/seo-indexing-urls.git",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "28492211"
+	},
+	"item": [
+		{
+			"name": "Sign Up",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"user\": \"user\",\n    \"password\": \"pass\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "0.0.0.0:5001/sign_up",
+					"host": [
+						"0",
+						"0",
+						"0",
+						"0"
+					],
+					"port": "5001",
+					"path": [
+						"sign_up"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Sign in",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"user\": \"user\",\n    \"password\": \"pass\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "0.0.0.0:5001/sign_in",
+					"host": [
+						"0",
+						"0",
+						"0",
+						"0"
+					],
+					"port": "5001",
+					"path": [
+						"sign_in"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get URLs",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo1NCwicm9sZSI6IlJPTEVfQURNSU4ifQ.eSnB1Pk8-TN701Ex1-uh-4DbpS9PGifMScGPIitheo4",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "0.0.0.0:5001/urls",
+					"host": [
+						"0",
+						"0",
+						"0",
+						"0"
+					],
+					"port": "5001",
+					"path": [
+						"urls"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
