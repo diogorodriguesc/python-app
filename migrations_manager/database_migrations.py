@@ -1,7 +1,7 @@
 import os
 import importlib.util
 
-from logger.logger_interface import LoggerInterface
+from logger.logger import LoggerInterface
 
 
 class DatabaseMigrations:

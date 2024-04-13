@@ -4,9 +4,8 @@ import yaml
 
 from google_configuration import GoogleConfiguration
 from migrations_manager.database_migrations import DatabaseMigrations
-from logger.formatters.text_formatter import TextFormatter
-from logger.logger import Logger
-from logger.logger_interface import LoggerInterface
+from logger.formatters import TextFormatter
+from logger.logger import Logger, LoggerInterface
 from repositories import UsersRepository
 
 from database_client import DatabaseClient
@@ -16,14 +15,14 @@ ENVIRONMENTS = ['dev', 'test', 'prod']
 
 
 def extract_configurations(environment: str) -> dict:
-    with open(CONFIG_FILES.get(environment), 'r') as file:
+    with open(CONFIG_FILES.get(environment), 'r', encoding="UTF-8") as file:
         return replace_env_variables(yaml.safe_load(file)['parameters'])
 
 
 def replace_env_variables(data):
     if isinstance(data, dict):
         for key, value in data.items():
-            if isinstance(value, dict) or isinstance(value, list):
+            if isinstance(value, (dict, list)):
                 replace_env_variables(value)
             elif isinstance(value, str) and '%' in value:
                 # Extract the environment variable name
@@ -35,7 +34,7 @@ def replace_env_variables(data):
                     data[key] = env_var_value
     elif isinstance(data, list):
         for i, item in enumerate(data):
-            if isinstance(item, dict) or isinstance(item, list):
+            if isinstance(item, (dict, list)):
                 replace_env_variables(item)
             elif isinstance(item, str) and '%' in item:
                 # Extract the environment variable name

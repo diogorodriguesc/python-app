@@ -26,7 +26,7 @@ def sign_in() -> tuple:
 
         return (Response(message="Could not sign in user")).parse(), 401
     except Exception as e:
-        return (Response(message=str(e), error=str(e))).parse(), 500
+        return (Response(message=str(e), error=str(e))).parse(), 401
 
 
 @app.post("/sign_up")
