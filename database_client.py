@@ -16,8 +16,8 @@ class DatabaseClient:
                 user=self.__config.get('user'),
                 password=self.__config.get('password')
             )
-        except Exception:
-            raise Exception("Could not connect to database")
+        except Exception as e:
+            raise Exception("Could not connect to database") from e
 
     def execute(self, query):
         connection = self.__connect()

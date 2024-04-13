@@ -1,11 +1,11 @@
 import os
 import psycopg2
+import yaml
 
 from google_configuration import GoogleConfiguration
 from migrations_manager.database_migrations import DatabaseMigrations
-from logger.formatters.text_formatter import TextFormatter
-from logger.logger import Logger
-from logger.logger_interface import LoggerInterface
+from logger.formatters import TextFormatter
+from logger.logger import Logger, LoggerInterface
 from repositories import UsersRepository
 
 from database_client import DatabaseClient
@@ -15,50 +15,40 @@ ENVIRONMENTS = ['dev', 'test', 'prod']
 
 
 def extract_configurations(environment: str) -> dict:
-    import yaml
-    with open(CONFIG_FILES.get(environment), 'r') as file:
+    with open(CONFIG_FILES.get(environment), 'r', encoding="UTF-8") as file:
         return replace_env_variables(yaml.safe_load(file)['parameters'])
 
 
 def replace_env_variables(data):
+    data1 = None
     if isinstance(data, dict):
-        for key, value in data.items():
-            if isinstance(value, dict) or isinstance(value, list):
+        data1 = data.items()
+    if isinstance(data, list):
+        data1 = enumerate(data)
+
+    if data1 is not None:
+        for key, value in data1:
+            if isinstance(value, (dict, list)):
                 replace_env_variables(value)
             elif isinstance(value, str) and '%' in value:
-                # Extract the environment variable name
                 env_var_name = value.strip('%')
-                # Get the corresponding environment variable value
                 env_var_value = os.getenv(env_var_name)
-                # Replace the value if environment variable exists
                 if env_var_value is not None:
                     data[key] = env_var_value
-    elif isinstance(data, list):
-        for i, item in enumerate(data):
-            if isinstance(item, dict) or isinstance(item, list):
-                replace_env_variables(item)
-            elif isinstance(item, str) and '%' in item:
-                # Extract the environment variable name
-                env_var_name = item.strip('%')
-                # Get the corresponding environment variable value
-                env_var_value = os.getenv(env_var_name)
-                # Replace the value if environment variable exists
-                if env_var_value is not None:
-                    data[i] = env_var_value
 
     return data
 
 
 class Container:
-    __logger: any = None
+    __logger: LoggerInterface = None
     __environment: str = None
     __parameters: dict = None
-    __google_configuration: any = None
-    __database_migrations: any = None
+    __google_configuration: GoogleConfiguration = None
+    __database_migrations: DatabaseMigrations = None
     __database_connection: any = None
     __users_repository: UsersRepository = None
     __database_configs: any = None
-    __database_client: any = None
+    __database_client: DatabaseClient = None
 
     def __init__(self, environment: str) -> None:
         if environment not in ENVIRONMENTS:
@@ -112,7 +102,7 @@ class Container:
 
         return self.__database_configs
 
-    def __get_database_client(self):
+    def __get_database_client(self) -> DatabaseClient:
         if self.__database_client is None:
             self.__database_client = DatabaseClient(self.__get_database_configuration())
 

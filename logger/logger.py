@@ -1,20 +1,39 @@
-import psycopg2
-
+from abc import abstractmethod
 from typing import final
 
-from logger.formatter_interface import FormatterInterface
-from logger.logger_interface import LoggerInterface
+from logger.formatters import FormatterInterface
 
 LOG_LEVELS = ['critical', 'error', 'warning', 'info', 'debug']
 
 
-@final
+class LoggerInterface:
+    @abstractmethod
+    def critical(self, message: str) -> str:
+        """Logs critical message into specific output channel."""
+
+    @abstractmethod
+    def error(self, message: str) -> str:
+        """Logs error message into specific output channel."""
+
+    @abstractmethod
+    def warning(self, message: str) -> str:
+        """Logs warning message into specific output channel."""
+
+    @abstractmethod
+    def info(self, message: str) -> str:
+        """Logs info message into specific output channel."""
+
+    @abstractmethod
+    def debug(self, message: str) -> str:
+        """Logs debug message into specific output channel."""
+
+
+@final # pylint: disable=using-final-decorator-in-unsupported-version
 class Logger(LoggerInterface):
     __fingers_cross: bool
     __fingers_cross_log_level: str
-    __log_queue: list = list()
+    __log_queue: list = []
     __formatter: FormatterInterface
-    __conn: psycopg2
 
     def __init__(self, config: dict, formatter: FormatterInterface) -> None:
         log_level = config.get('fingers_cross_log_level')
@@ -51,6 +70,6 @@ class Logger(LoggerInterface):
                     print(log)
                 print(message)
 
-                self.__log_queue = list()
+                self.__log_queue = []
         else:
             print(message)

@@ -1,6 +1,8 @@
 class Version20240102:
-    def up(self) -> str:
-        return f'CREATE TABLE "users" ("id" SERIAL,"username" varchar UNIQUE,"pwd" varchar,"role" varchar, PRIMARY KEY ("id"));'
+    @staticmethod
+    def up() -> str:
+        return 'CREATE TABLE "users" ("id" SERIAL,"username" varchar UNIQUE,"pwd" varchar,"role" varchar, PRIMARY KEY ("id"));'
 
-    def down(self) -> None:
+    @staticmethod
+    def down() -> None:
         raise Exception("Not revertable")

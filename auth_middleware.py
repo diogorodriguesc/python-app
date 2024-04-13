@@ -1,7 +1,8 @@
-import jwt
+from functools import wraps
 import hashlib
 
-from functools import wraps
+import jwt
+
 from flask import request, abort, current_app
 from models import User
 from repositories import UsersRepository
@@ -31,7 +32,7 @@ def auth_required(role: str):
                         "data": None,
                         "error": "Unauthorized"
                     }, 401
-                if type(current_user) is User and current_user.get_role() != role:
+                if isinstance(current_user, User) and current_user.get_role() != role:
                     abort(403)
             except Exception as e:
                 return {
@@ -46,7 +47,7 @@ def auth_required(role: str):
 
 
 def authenticate_user(params: dict, users_repository: UsersRepository) -> dict:
-    if type(params) is not dict or params.keys() != {'user', 'password'}:
+    if not isinstance(params, dict) or params.keys() != {'user', 'password'}:
         raise Exception("Body params invalid")
 
     user = users_repository.checkIfExists(params['user'], create_password_hash(params["password"]))
@@ -61,7 +62,7 @@ def authenticate_user(params: dict, users_repository: UsersRepository) -> dict:
 
 
 def register_user(params: dict, users_repository: UsersRepository) -> bool:
-    if type(params) is not dict or params.keys() != {'user', 'password'}:
+    if not isinstance(params, dict) or params.keys() != {'user', 'password'}:
         raise Exception("Body params invalid")
 
     users_repository.create_user(
