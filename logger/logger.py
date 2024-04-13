@@ -6,7 +6,7 @@ from logger.logger_interface import LoggerInterface
 LOG_LEVELS = ['critical', 'error', 'warning', 'info', 'debug']
 
 
-@final
+@final # pylint: disable=using-final-decorator-in-unsupported-version
 class Logger(LoggerInterface):
     __fingers_cross: bool
     __fingers_cross_log_level: str

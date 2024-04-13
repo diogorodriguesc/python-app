@@ -6,7 +6,7 @@ The project being developed is a way to learn, train and develop experience over
 - Postgres 
 - DevOps
 
-## Installation
+## Installing
 
 ### Host Dependencies
 
@@ -28,6 +28,7 @@ sh start-dev-environment.sh dev
   - pillow
   - psycopg2
   - pyjwt
+  - pylint
   - pyyaml
 
 "The best way to predict your future is to create it." - Abraham Lincoln

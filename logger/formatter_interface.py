@@ -9,4 +9,3 @@ class FormatterInterface(metaclass=ABCMeta):
     @abstractmethod
     def format(self, message: str, log_level: str) -> str:
         """format the message."""
-        pass
