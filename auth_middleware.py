@@ -46,7 +46,7 @@ def auth_required(role: str):
     return decorator
 
 
-def authenticate_user(params: dict, users_repository: UsersRepository) -> dict:
+def authenticate_user(params: dict, users_repository: UsersRepository) -> str:
     if not isinstance(params, dict) or params.keys() != {'user', 'password'}:
         raise Exception("Body params invalid")
 
@@ -56,9 +56,7 @@ def authenticate_user(params: dict, users_repository: UsersRepository) -> dict:
 
     token = jwt.encode({'user_id': user[0], 'role': 'ROLE_ADMIN'}, current_app.config['SECRET_KEY'], algorithm='HS256')
 
-    return {
-        "token": token
-    }
+    return token
 
 
 def register_user(params: dict, users_repository: UsersRepository) -> bool:

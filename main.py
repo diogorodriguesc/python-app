@@ -20,8 +20,7 @@ def urls(current_user: User) -> tuple: # pylint: disable=unused-argument
 def sign_in() -> tuple:
     try:
         token = authenticate_user(request.json, container.get_users_repository())
-
-        if isinstance(token, dict):
+        if isinstance(token, str):
             return (Response(data={"token": token})).parse(), 200
 
         return (Response(message="Could not sign in user")).parse(), 401

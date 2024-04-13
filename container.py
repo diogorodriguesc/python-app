@@ -4,8 +4,11 @@ import yaml
 
 from google_configuration import GoogleConfiguration
 from migrations_manager.database_migrations import DatabaseMigrations
-from logger.formatters import TextFormatter
-from logger.logger import Logger, LoggerInterface
+from logger import (
+    TextFormatter,
+    Logger,
+    LoggerInterface
+)
 from repositories import UsersRepository
 
 from database_client import DatabaseClient
