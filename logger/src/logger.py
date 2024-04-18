@@ -1,10 +1,15 @@
 from abc import abstractmethod
 from typing import final
 
-from logger.formatters import FormatterInterface
+from datetime import datetime
+
+from abc import abstractmethod, ABCMeta
 
 LOG_LEVELS = ['critical', 'error', 'warning', 'info', 'debug']
 
+
+def get_datetime_string() -> str:
+    return (datetime.now()).strftime('%Y-%m-%d %H:%M:%S')
 
 class LoggerInterface:
     @abstractmethod
@@ -26,6 +31,24 @@ class LoggerInterface:
     @abstractmethod
     def debug(self, message: str) -> str:
         """Logs debug message into specific output channel."""
+
+
+class FormatterInterface(metaclass=ABCMeta):
+    @abstractmethod
+    def __init__(self) -> None:
+        pass
+
+    @abstractmethod
+    def format(self, message: str, log_level: str) -> str:
+        """format the message."""
+
+
+class TextFormatter(FormatterInterface):
+    def __init__(self) -> None:
+        pass
+
+    def format(self, message: str, log_level: str) -> str:
+        return f"[{get_datetime_string()}][{log_level.upper()}] {message}"
 
 
 @final # pylint: disable=using-final-decorator-in-unsupported-version

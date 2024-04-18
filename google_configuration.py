@@ -1,7 +1,7 @@
 import json
 
 from types import SimpleNamespace
-from logger.logger import LoggerInterface
+from logger import LoggerInterface
 
 
 class GoogleConfiguration:
